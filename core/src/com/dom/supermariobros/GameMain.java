@@ -14,25 +14,25 @@ public class GameMain extends Game {
 	Texture img;
 	
 	public void create () {
-		//setScreen(new Splash());
-		batch = new SpriteBatch();
-		img = new Texture("splash.png");
+		setScreen(new Splash());
+		//batch = new SpriteBatch();
+		//img = new Texture("splash.png");
 	}
 
 	public void render () {
 		super.render();
-		Gdx.gl.glClearColor(1, 0, 0, 1);
+		/*Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
 		batch.draw(img, 0, 0);
 		batch.end();
-		
+		*/
 	}
 	
 	public void dispose () {
 		super.dispose();
-		batch.dispose();
-		img.dispose();
+		//batch.dispose();
+		//img.dispose();
 	}
 	
 	public void resize(int width, int height) {
