@@ -1,5 +1,6 @@
 package net.dom.supermariobros.screens;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -7,7 +8,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import aurelienribon.tweenengine.BaseTween;
 import aurelienribon.tweenengine.Tween;
+import aurelienribon.tweenengine.TweenCallback;
 import aurelienribon.tweenengine.TweenManager;
 import net.dom.supermariobros.tween.SpriteAccessor;
 
@@ -27,8 +30,12 @@ public class Splash implements Screen {
 		splash.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		
 		Tween.set(splash, SpriteAccessor.ALPHA).target(0).start(tweenManager);
-		Tween.to(splash, SpriteAccessor.ALPHA, 2).target(1).start(tweenManager);
-		Tween.to(splash, SpriteAccessor.ALPHA, 2).target(0).delay(2).start(tweenManager);
+		
+		Tween.to(splash, SpriteAccessor.ALPHA, 1).target(1).repeatYoyo(1, 2).setCallback(new TweenCallback() {
+			public void onEvent(int type, BaseTween<?> source) {
+				((Game) Gdx.app.getApplicationListener()).setScreen(new MainMenu());
+			}
+		}).start(tweenManager);
 	}
 
 	public void render(float delta) {
@@ -58,7 +65,8 @@ public class Splash implements Screen {
 	}
 
 	public void dispose() {
-		
+		batch.dispose();
+		splash.getTexture().dispose();
 	}
 	
 }
