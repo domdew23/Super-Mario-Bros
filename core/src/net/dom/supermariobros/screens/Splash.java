@@ -49,7 +49,7 @@ public class Splash implements Screen {
 	}
 
 	public void resize(int width, int height) {
-		
+		splash.setSize(width, height);
 	}
 
 	public void pause() {
