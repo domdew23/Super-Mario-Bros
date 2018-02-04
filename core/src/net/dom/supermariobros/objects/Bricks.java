@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.dom.supermariobros.GameMain;
 
 public class Bricks {
 	
@@ -16,10 +17,10 @@ public class Bricks {
 		for (MapObject object : map.getLayers().get(4).getObjects().getByType(RectangleMapObject.class)) {
 			Rectangle rect = ((RectangleMapObject) object).getRectangle();
 			bodyDef.type = BodyDef.BodyType.StaticBody;
-			bodyDef.position.set(rect.getX() + rect.getWidth()/2, rect.getY() + rect.getHeight()/2);
+			bodyDef.position.set((rect.getX() + rect.getWidth()/2)/GameMain.scale, (rect.getY() + rect.getHeight()/2)/GameMain.scale);
 			
 			body = world.createBody(bodyDef);
-			shape.setAsBox(rect.getWidth()/2, rect.getHeight()/2);
+			shape.setAsBox(rect.getWidth() / 2 /GameMain.scale, rect.getHeight() / 2 /GameMain.scale);
 			fixDef.shape = shape;
 			body.createFixture(fixDef);			
 		}

@@ -10,8 +10,8 @@ public class DesktopLauncher {
 		config.title = "Super Mario Bros";
 		config.vSyncEnabled = true;
 		config.useGL30 = true;
-		config.width = 1280;
-		config.height = 720;
+		config.width = 1200;
+		config.height = 624;
 		new LwjglApplication(new GameMain(), config);
 	}
 }

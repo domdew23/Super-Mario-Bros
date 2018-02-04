@@ -12,6 +12,8 @@ import net.dom.supermariobros.screens.Splash;
 public class GameMain extends Game {
 	SpriteBatch batch;
 	Texture img;
+	public static final float scale = 100;
+	
 	
 	public void create () {
 		setScreen(new Splash());
