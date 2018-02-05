@@ -153,7 +153,6 @@ public class MainMenu implements Screen {
 
 	public void hide() {
 		dispose();
-
 	}
 
 	public void dispose() {

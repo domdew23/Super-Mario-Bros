@@ -6,9 +6,12 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -19,8 +22,8 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.dom.supermariobros.GameMain;
-import net.dom.supermariobros.objects.Bricks;
-import net.dom.supermariobros.objects.Coins;
+import net.dom.supermariobros.objects.Brick;
+import net.dom.supermariobros.objects.Coin;
 import net.dom.supermariobros.objects.Ground;
 import net.dom.supermariobros.objects.Pipes;
 import net.dom.supermariobros.sprites.Mario;
@@ -40,8 +43,8 @@ public class GameScreen implements Screen{
     
     private Ground ground;
     private Pipes pipes;
-    private Coins coins;
-    private Bricks bricks;
+    private Coin[] coins;
+    private Brick[] bricks;
     private Mario mario;
     
     /*
@@ -63,7 +66,7 @@ public class GameScreen implements Screen{
     	
     	camera = new OrthographicCamera();
     	gamePort = new FitViewport(400/ GameMain.scale,208/ GameMain.scale, camera);
-    	camera.position.set(gamePort.getWorldWidth() / 2, (gamePort.getWorldHeight() / 2), 0);
+    	camera.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
     	
     	BodyDef bodyDef = new BodyDef();
     	FixtureDef fixDef = new FixtureDef();
@@ -75,9 +78,17 @@ public class GameScreen implements Screen{
     private void createObjects(BodyDef bodyDef, PolygonShape shape, FixtureDef fixDef) {
     	ground = new Ground(map, world, bodyDef, body, shape, fixDef);
 		pipes = new Pipes(map, world, bodyDef, body, shape, fixDef);
-		coins = new Coins(map, world, bodyDef, body, shape, fixDef);
-		bricks = new Bricks(map, world, bodyDef, body, shape, fixDef);
 		mario = new Mario(world);
+		
+		for (MapObject obj : map.getLayers().get(4).getObjects().getByType(RectangleMapObject.class)) {
+			Rectangle rect = ((RectangleMapObject) obj).getRectangle();
+			new Coin(world, map, rect);
+		}
+		
+		for (MapObject obj : map.getLayers().get(5).getObjects().getByType(RectangleMapObject.class)) {
+			Rectangle rect = ((RectangleMapObject) obj).getRectangle();
+			new Brick(world, map, rect);
+		}
     }
 
 
@@ -91,6 +102,9 @@ public class GameScreen implements Screen{
         if (Gdx.input.isKeyJustPressed(Keys.UP)) {
         	mario.body.applyLinearImpulse(new Vector2(0, 2f), mario.body.getWorldCenter(), true);
         }
+        if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
+        	Gdx.app.exit();
+        }
 
     }
 
@@ -101,9 +115,8 @@ public class GameScreen implements Screen{
         inputHandler(delta);
         
         world.step(1/60f, 6, 2);
-       
-        System.out.println(camera.position.x);
-        if (camera.position.x > 0 && camera.position.x < 36) camera.position.x = mario.body.getPosition().x;
+        
+        if (mario.body.getPosition().x < 36 && mario.body.getPosition().x > 0) camera.position.x = mario.body.getPosition().x;
         camera.update();
         renderer.setView(camera);
         renderer.render();
@@ -111,7 +124,7 @@ public class GameScreen implements Screen{
     }
 
     public void resize(int width, int height) {
-        gamePort.update(width,height);
+        gamePort.update(width, height);
     }
 
     public void pause() {
