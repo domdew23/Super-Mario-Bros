@@ -109,14 +109,14 @@ public class GameScreen implements Screen{
 
 
     public void inputHandler(float delta){
-        if(Gdx.input.isKeyPressed(Keys.D)) {
+        if(Gdx.input.isKeyPressed(Keys.D) && mario.body.getLinearVelocity().x <= 2) {
         	mario.body.applyLinearImpulse(new Vector2(0.1f, 0), mario.body.getWorldCenter(), true);
         }
-        if (Gdx.input.isKeyPressed(Keys.A)) {
+        if (Gdx.input.isKeyPressed(Keys.A) && mario.body.getLinearVelocity().x <= 2) {
         	mario.body.applyLinearImpulse(new Vector2(-0.1f, 0), mario.body.getWorldCenter(), true);        	
         }
         if (Gdx.input.isKeyJustPressed(Keys.SPACE)) {
-        	mario.body.applyLinearImpulse(new Vector2(0, 2f), mario.body.getWorldCenter(), true);
+        	mario.body.applyLinearImpulse(new Vector2(0, 3f), mario.body.getWorldCenter(), true);
         }
         if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
         	Gdx.app.exit();
