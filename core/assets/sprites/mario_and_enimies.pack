@@ -1,0 +1,26 @@
+
+mario_and_enimies.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+turtle_sheet
+  rotate: false
+  xy: 1, 1
+  size: 396, 411
+  orig: 396, 411
+  offset: 0, 0
+  index: -1
+mario_sheet
+  rotate: false
+  xy: 399, 272
+  size: 483, 140
+  orig: 483, 140
+  offset: 0, 0
+  index: -1
+goomba_sheet
+  rotate: false
+  xy: 399, 54
+  size: 380, 216
+  orig: 380, 216
+  offset: 0, 0
+  index: -1

@@ -10,13 +10,14 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import net.dom.supermariobros.screens.Splash;
 
 public class GameMain extends Game {
-	SpriteBatch batch;
+	public SpriteBatch batch;
 	Texture img;
 	public static final float scale = 100;
 	
 	
 	public void create () {
-		setScreen(new Splash());
+		batch = new SpriteBatch();
+		setScreen(new Splash(this));
 	}
 
 	public void render () {

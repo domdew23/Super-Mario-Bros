@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.dom.supermariobros.GameMain;
 
 import aurelienribon.tweenengine.Timeline;
 import aurelienribon.tweenengine.Tween;
@@ -33,7 +34,11 @@ public class MainMenu implements Screen {
 	private BitmapFont white, black;
 	private TextureAtlas atlas;
 	private TweenManager tweenManager;
+	private GameMain game;
 	
+	public MainMenu(GameMain game) {
+		this.game = game;
+	}
 	public void show() {
 		stage = new Stage();
 		Gdx.input.setInputProcessor(stage);
@@ -108,7 +113,7 @@ public class MainMenu implements Screen {
 		playButton.pad(31);
 		playButton.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
-				((Game) Gdx.app.getApplicationListener()).setScreen(new GameScreen());
+				((Game) Gdx.app.getApplicationListener()).setScreen(new GameScreen(game));
 				Tween.from(table, ActorAccessor.ALPHA, 1f).target(0).start(tweenManager);
 				Tween.from(table, ActorAccessor.Y, 0).target(Gdx.graphics.getHeight()/8).start(tweenManager);			
 				}

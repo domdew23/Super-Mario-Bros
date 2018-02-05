@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.dom.supermariobros.GameMain;
 
 import aurelienribon.tweenengine.BaseTween;
 import aurelienribon.tweenengine.Tween;
@@ -19,7 +20,11 @@ public class Splash implements Screen {
 	private Sprite splash;
 	private SpriteBatch batch;
 	private TweenManager tweenManager;
+	private GameMain game;
 	
+	public Splash(GameMain game) {
+		this.game = game;
+	}
 	public void show() {
 		batch = new SpriteBatch();
 		tweenManager = new TweenManager();
@@ -33,7 +38,7 @@ public class Splash implements Screen {
 		
 		Tween.to(splash, SpriteAccessor.ALPHA, 1).target(1).repeatYoyo(1, 2).setCallback(new TweenCallback() {
 			public void onEvent(int type, BaseTween<?> source) {
-				((Game) Gdx.app.getApplicationListener()).setScreen(new MainMenu());
+				((Game) Gdx.app.getApplicationListener()).setScreen(new MainMenu(game));
 			}
 		}).start(tweenManager);
 	}
