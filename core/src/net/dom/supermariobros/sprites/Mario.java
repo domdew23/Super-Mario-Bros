@@ -3,9 +3,11 @@ package net.dom.supermariobros.sprites;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
@@ -21,11 +23,12 @@ public class Mario extends Sprite {
 		JUMPING,
 		STANDING,
 		RUNNING
-	}
+	};
 	public State currentState;
 	public State prevState;
 	private Animation<TextureRegion> run;
 	private Animation<TextureRegion> jump;
+	private Animation<TextureRegion> blink;
 	private boolean runningRight;
 	private float stateTimer;
 	
@@ -39,24 +42,45 @@ public class Mario extends Sprite {
 		stateTimer = 0;
 		runningRight = true;
 		
+		makeBody();
 		runAnimation();
 		jumpAnimation();
+		blinkAnimation();
+		
+		standing = new TextureRegion(getTexture(), 405, 272, 20, 40);
+		setBounds(0, 0, 20 / GameMain.scale, 40 / GameMain.scale);
+		setRegion(standing);
+	}
 	
+	private void makeBody() {
 		BodyDef bodyDef = new BodyDef();
-		bodyDef.position.set(32 / GameMain.scale, 32 / GameMain.scale);
+		bodyDef.position.set(200 / GameMain.scale, 32 / GameMain.scale);
 		bodyDef.type = BodyDef.BodyType.DynamicBody;
 		body = world.createBody(bodyDef);
-		
+
 		FixtureDef fixDef = new FixtureDef();
 		CircleShape shape = new CircleShape();
 		shape.setRadius(14 / GameMain.scale);
 		fixDef.shape = shape;
 		body.createFixture(fixDef);
-		
-		//399 //495
-		standing = new TextureRegion(getTexture(), 405, 272, 20, 40);
-		setBounds(0, 0, 20 / GameMain.scale, 40 / GameMain.scale);
-		setRegion(standing);
+		makeHead(fixDef);
+	}
+	
+	private void makeHead(FixtureDef fixDef) {
+		EdgeShape head = new EdgeShape();
+		head.set(new Vector2(-4 / GameMain.scale, 14 / GameMain.scale), new Vector2(4 / GameMain.scale, 14 / GameMain.scale));
+		fixDef.shape = head;
+		fixDef.isSensor = true;
+		body.createFixture(fixDef).setUserData("head");
+	}
+	
+	private void blinkAnimation() {
+		Array<TextureRegion> frames = new Array<TextureRegion>();
+		for (int i = 405; i < 405 + (23*2); i+=23) {
+			frames.add(new TextureRegion(getTexture(), i, 272, 23, 40));
+		}
+		blink = new Animation<TextureRegion>(0.5f, frames);
+		frames.clear();
 	}
 	
 	private void runAnimation() {
@@ -85,9 +109,8 @@ public class Mario extends Sprite {
 		switch (currentState) {
 			case JUMPING: region = jump.getKeyFrame(stateTimer); break;
 			case RUNNING: region = run.getKeyFrame(stateTimer, true); break;
-			default:
-				region = standing;
-				break;
+			case STANDING: region = blink.getKeyFrame(stateTimer, true); break;
+			default: region = standing; break;
 		}
 		
 		if ((body.getLinearVelocity().x < 0 || !runningRight) && !region.isFlipX()) {

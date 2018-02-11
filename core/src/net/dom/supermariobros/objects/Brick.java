@@ -8,5 +8,11 @@ public class Brick extends Interactive {
 	
 	public Brick (World world, TiledMap map, Rectangle rect) {	
 		super(world, map, rect);
+		fixture.setUserData(this);
+	}
+
+	public void collision() {
+		getCell().setTile(null);
+		destroy = true;
 	}
 }

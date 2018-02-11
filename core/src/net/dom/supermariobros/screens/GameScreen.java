@@ -2,11 +2,10 @@ package net.dom.supermariobros.screens;
 
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.MapObject;
@@ -14,7 +13,6 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -27,17 +25,20 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.dom.supermariobros.GameMain;
+
+import net.dom.supermariobros.listeners.CollisionListener;
 import net.dom.supermariobros.objects.Brick;
 import net.dom.supermariobros.objects.Coin;
 import net.dom.supermariobros.objects.Ground;
+import net.dom.supermariobros.objects.Interactive;
 import net.dom.supermariobros.objects.Pipes;
 import net.dom.supermariobros.sprites.Mario;
 
 
-public class GameScreen implements Screen{
+public class GameScreen implements Screen {
 
     private OrthographicCamera camera;
-    private Viewport gamePort;
+    private Viewport viewPort;
     private TmxMapLoader maploader;
     private OrthogonalTiledMapRenderer renderer;
     private TiledMap map;
@@ -53,10 +54,11 @@ public class GameScreen implements Screen{
     private Mario mario;
     
     private SpriteBatch batch;
-    private Array<Body> tmpBodies = new Array<Body>();
     
     private TextureAtlas atlas;
     private GameMain game;
+    private Array<Interactive> interactiveObjects;
+    
     /*
      * 0 - Background
      * 1 - Graphics
@@ -68,47 +70,51 @@ public class GameScreen implements Screen{
     
     public GameScreen(GameMain game) {
     	this.game = game;
+    	this.world = new World(new Vector2(0, -9.81f), true);
+    	world.setContactListener(new CollisionListener());
+    	this.debug = new Box2DDebugRenderer();
+    	this.atlas = new TextureAtlas("sprites/mario_and_enimies.pack");
+    	this.batch = new SpriteBatch();
+    	this.interactiveObjects = new Array<Interactive>();
+    	
+    	loadMap();
+    	loadCamera();
+    	createObjects();
     }
     
-    public void show() {
-    	world = new World(new Vector2(0, -9.81f), true);
-    	debug = new Box2DDebugRenderer();
-    	
+    private void loadCamera() {
+    	camera = new OrthographicCamera();
+    	viewPort = new FitViewport(400/ GameMain.scale,208/ GameMain.scale, camera);
+    	camera.position.set(viewPort.getWorldWidth() / 2, viewPort.getWorldHeight() / 2, 0);    	
+    }
+    
+    private void loadMap() {
     	maploader = new TmxMapLoader();
     	map = maploader.load("map/map.tmx");
-    	renderer = new OrthogonalTiledMapRenderer(map, 1/ GameMain.scale);
-    	
-    	camera = new OrthographicCamera();
-    	gamePort = new FitViewport(400/ GameMain.scale,208/ GameMain.scale, camera);
-    	camera.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
-    	
+    	renderer = new OrthogonalTiledMapRenderer(map, 1/ GameMain.scale);    	
+    }
+    
+    private void createObjects() {    	
     	BodyDef bodyDef = new BodyDef();
     	FixtureDef fixDef = new FixtureDef();
     	PolygonShape shape = new PolygonShape();
     	
-    	atlas = new TextureAtlas("sprites/mario_and_enimies.pack");
-    	createObjects(bodyDef, shape, fixDef);
-    	batch = new SpriteBatch();
-    }
-    
-    private void createObjects(BodyDef bodyDef, PolygonShape shape, FixtureDef fixDef) {
     	ground = new Ground(map, world, bodyDef, body, shape, fixDef);
 		pipes = new Pipes(map, world, bodyDef, body, shape, fixDef);
 		mario = new Mario(world, this);
 		
 		for (MapObject obj : map.getLayers().get(4).getObjects().getByType(RectangleMapObject.class)) {
 			Rectangle rect = ((RectangleMapObject) obj).getRectangle();
-			new Coin(world, map, rect);
+			interactiveObjects.add(new Coin(world, map, rect));
 		}
 		
 		for (MapObject obj : map.getLayers().get(5).getObjects().getByType(RectangleMapObject.class)) {
 			Rectangle rect = ((RectangleMapObject) obj).getRectangle();
-			new Brick(world, map, rect);
+			interactiveObjects.add(new Brick(world, map, rect));
 		}
     }
 
-
-    public void inputHandler(float delta){
+    public void handleInput(float delta){
         if(Gdx.input.isKeyPressed(Keys.D) && mario.body.getLinearVelocity().x <= 2) {
         	mario.body.applyLinearImpulse(new Vector2(0.1f, 0), mario.body.getWorldCenter(), true);
         }
@@ -116,39 +122,54 @@ public class GameScreen implements Screen{
         	mario.body.applyLinearImpulse(new Vector2(-0.1f, 0), mario.body.getWorldCenter(), true);        	
         }
         if (Gdx.input.isKeyJustPressed(Keys.SPACE)) {
-        	mario.body.applyLinearImpulse(new Vector2(0, 3f), mario.body.getWorldCenter(), true);
+        	mario.body.applyLinearImpulse(new Vector2(0, 2.5f), mario.body.getWorldCenter(), true);
         }
         if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
         	Gdx.app.exit();
         }
-
+        if (mario.body.getPosition().x < 36 && mario.body.getPosition().x > 2) camera.position.x = mario.body.getPosition().x;
     }
 
     public void render(float delta) {
         Gdx.gl.glClearColor(.37f, .592f, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        inputHandler(delta);
-        
-        world.step(1/60f, 6, 2);
-        
-        if (mario.body.getPosition().x < 36 && mario.body.getPosition().x > 0) camera.position.x = mario.body.getPosition().x;
-        camera.update();
-        mario.update(delta);
-        renderer.setView(camera);
-        renderer.render();
-        
-        game.batch.setProjectionMatrix(camera.combined);
-        game.batch.begin();
-        mario.draw(game.batch);
-        game.batch.end();
-        debug.render(world, camera.combined);
+        handleInput(delta);
+        update(delta);
+        draw(delta);  
+    }
+    
+    private void update(float delta) {
+    	world.step(1/60f, 6, 2);
+    	camera.update();
+    	mario.update(delta);
+    	renderer.setView(camera);
+    	game.batch.setProjectionMatrix(camera.combined);
+    	
+    	for (Interactive obj : interactiveObjects) {
+    		if(obj.destroy && !world.isLocked()) {
+    			world.destroyBody(obj.body);
+    			interactiveObjects.removeValue(obj, true);
+    		}
+    	}
+    	
+    }
+    
+    private void draw(float delta) {
+    	renderer.render();	
+    	game.batch.begin();
+    	mario.draw(game.batch);
+    	game.batch.end();
+    	debug.render(world, camera.combined);    	
     }
 
     public void resize(int width, int height) {
-        gamePort.update(width, height);
+    	viewPort.update(width, height);
     }
 
+    public void show() {
+    }
+    
     public void pause() {
 
     }
@@ -158,7 +179,7 @@ public class GameScreen implements Screen{
     }
 
     public void hide() {
-
+    
     }
 
     public void dispose() {

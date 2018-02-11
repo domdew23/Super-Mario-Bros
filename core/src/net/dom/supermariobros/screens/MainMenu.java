@@ -39,6 +39,7 @@ public class MainMenu implements Screen {
 	public MainMenu(GameMain game) {
 		this.game = game;
 	}
+	
 	public void show() {
 		stage = new Stage();
 		Gdx.input.setInputProcessor(stage);
@@ -46,24 +47,20 @@ public class MainMenu implements Screen {
 		atlas = new TextureAtlas("ui/button.pack");
 		skin = new Skin(atlas);
 		black = new BitmapFont(Gdx.files.internal("font/black.fnt"), false);
-		white = new BitmapFont(Gdx.files.internal("font/white.fnt"), false);
-		
+		white = new BitmapFont(Gdx.files.internal("font/white.fnt"), false);		
 		table = new Table(skin);
+		tweenManager = new TweenManager();
+		LabelStyle headingStyle = new LabelStyle(white, Color.WHITE);
+		heading = new Label("Super Mario Bros", headingStyle);
+		
 		table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		
 		addButtons();
-		
-		LabelStyle headingStyle = new LabelStyle(white, Color.WHITE);
-		heading = new Label("Super Mario Bros", headingStyle);
-
 		setStage();
-		tweenManager = new TweenManager();
+		
 		Tween.registerAccessor(Actor.class, new ActorAccessor());
-		
 		fadeIn();
-		
 		rainbow();
-		
 
 		Tween.from(table, ActorAccessor.ALPHA, 1f).target(0).start(tweenManager);
 		Tween.from(table, ActorAccessor.Y, 1f).target(Gdx.graphics.getHeight()/8).start(tweenManager);
