@@ -35,9 +35,16 @@ public class MainMenu implements Screen {
 	private TextureAtlas atlas;
 	private TweenManager tweenManager;
 	private GameMain game;
+	private String text;
 	
 	public MainMenu(GameMain game) {
 		this.game = game;
+		this.text = "Super Mario Bros";
+	}
+	
+	public MainMenu(GameMain game, String text) {
+		this.game = game;
+		this.text = text;
 	}
 	
 	public void show() {
@@ -51,7 +58,7 @@ public class MainMenu implements Screen {
 		table = new Table(skin);
 		tweenManager = new TweenManager();
 		LabelStyle headingStyle = new LabelStyle(white, Color.WHITE);
-		heading = new Label("Super Mario Bros", headingStyle);
+		heading = new Label(text, headingStyle);
 		
 		table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		
@@ -106,7 +113,9 @@ public class MainMenu implements Screen {
 			}
 		});
 		
-		playButton = new TextButton("PLAY", textButtonStyle);
+		String playText = "PLAY";
+		if (text == "GAME OVER") playText = "PLAY AGAIN";
+		playButton = new TextButton(playText, textButtonStyle);
 		playButton.pad(31);
 		playButton.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {

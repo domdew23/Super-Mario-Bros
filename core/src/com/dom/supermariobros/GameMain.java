@@ -4,7 +4,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-import net.dom.supermariobros.screens.Splash;
+import net.dom.supermariobros.screens.GameScreen;
 
 public class GameMain extends Game {
 	public SpriteBatch batch;
@@ -13,7 +13,7 @@ public class GameMain extends Game {
 	
 	public void create () {
 		batch = new SpriteBatch();
-		setScreen(new Splash(this));
+		setScreen(new GameScreen(this));//new Splash(this));
 	}
 
 	public void render () {

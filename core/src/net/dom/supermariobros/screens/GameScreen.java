@@ -1,12 +1,11 @@
 package net.dom.supermariobros.screens;
 
-
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
@@ -26,12 +25,15 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.dom.supermariobros.GameMain;
 
+import net.dom.supermariobros.gui.Score;
 import net.dom.supermariobros.listeners.CollisionListener;
 import net.dom.supermariobros.objects.Brick;
 import net.dom.supermariobros.objects.Coin;
 import net.dom.supermariobros.objects.Ground;
 import net.dom.supermariobros.objects.Interactive;
 import net.dom.supermariobros.objects.Pipes;
+import net.dom.supermariobros.sprites.Enemy;
+import net.dom.supermariobros.sprites.Goomba;
 import net.dom.supermariobros.sprites.Mario;
 
 
@@ -52,13 +54,13 @@ public class GameScreen implements Screen {
     private Coin[] coins;
     private Brick[] bricks;
     private Mario mario;
-    
-    private SpriteBatch batch;
+    private Array<Enemy> enimies;
     
     private TextureAtlas atlas;
     private GameMain game;
     private Array<Interactive> interactiveObjects;
-    
+    private Score score;
+    private int count = 0;
     /*
      * 0 - Background
      * 1 - Graphics
@@ -74,8 +76,8 @@ public class GameScreen implements Screen {
     	world.setContactListener(new CollisionListener());
     	this.debug = new Box2DDebugRenderer();
     	this.atlas = new TextureAtlas("sprites/mario_and_enimies.pack");
-    	this.batch = new SpriteBatch();
     	this.interactiveObjects = new Array<Interactive>();
+    	this.enimies = new Array<Enemy>();
     	
     	loadMap();
     	loadCamera();
@@ -99,9 +101,12 @@ public class GameScreen implements Screen {
     	FixtureDef fixDef = new FixtureDef();
     	PolygonShape shape = new PolygonShape();
     	
+    	score = new Score("x 0", Gdx.graphics.getWidth()/2, 550f);
     	ground = new Ground(map, world, bodyDef, body, shape, fixDef);
 		pipes = new Pipes(map, world, bodyDef, body, shape, fixDef);
 		mario = new Mario(world, this);
+		enimies.add(new Goomba(world, this, 5.15f, .32f, "goomba_sheet"));
+		enimies.add(new Goomba(world, this, 5.75f, .32f, "goomba_sheet"));
 		
 		for (MapObject obj : map.getLayers().get(4).getObjects().getByType(RectangleMapObject.class)) {
 			Rectangle rect = ((RectangleMapObject) obj).getRectangle();
@@ -115,14 +120,18 @@ public class GameScreen implements Screen {
     }
 
     public void handleInput(float delta){
-        if(Gdx.input.isKeyPressed(Keys.D) && mario.body.getLinearVelocity().x <= 2) {
+    	if (mario.body.getPosition().x < 0.5) {
+    		mario.body.applyLinearImpulse(new Vector2(0.1f, 0), mario.body.getWorldCenter(), true);
+    		return;
+    	}
+        if(Gdx.input.isKeyPressed(Keys.RIGHT) && mario.body.getLinearVelocity().x <= 2) {
         	mario.body.applyLinearImpulse(new Vector2(0.1f, 0), mario.body.getWorldCenter(), true);
         }
-        if (Gdx.input.isKeyPressed(Keys.A) && mario.body.getLinearVelocity().x <= 2) {
+        if (Gdx.input.isKeyPressed(Keys.LEFT) && mario.body.getLinearVelocity().x >= -2) {
         	mario.body.applyLinearImpulse(new Vector2(-0.1f, 0), mario.body.getWorldCenter(), true);        	
         }
-        if (Gdx.input.isKeyJustPressed(Keys.SPACE)) {
-        	mario.body.applyLinearImpulse(new Vector2(0, 2.5f), mario.body.getWorldCenter(), true);
+        if (Gdx.input.isKeyJustPressed(Keys.UP) && mario.body.getLinearVelocity().y == 0) {
+        	mario.body.applyLinearImpulse(new Vector2(0, 3.8f), mario.body.getWorldCenter(), true);
         }
         if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
         	Gdx.app.exit();
@@ -143,22 +152,28 @@ public class GameScreen implements Screen {
     	world.step(1/60f, 6, 2);
     	camera.update();
     	mario.update(delta);
+    	for (Enemy e : enimies) e.update(delta);
     	renderer.setView(camera);
     	game.batch.setProjectionMatrix(camera.combined);
     	
+    	if (mario.body.getPosition().y < -1 || mario.body.getPosition().y > viewPort.getWorldHeight()) {
+    		((Game) Gdx.app.getApplicationListener()).setScreen(new MainMenu(game, "GAME OVER"));
+    	}
     	for (Interactive obj : interactiveObjects) {
     		if(obj.destroy && !world.isLocked()) {
     			world.destroyBody(obj.body);
     			interactiveObjects.removeValue(obj, true);
+    			score.update("x " + Integer.toString(++count));
     		}
     	}
-    	
     }
     
     private void draw(float delta) {
-    	renderer.render();	
+    	renderer.render();
+    	score.draw(delta);
     	game.batch.begin();
     	mario.draw(game.batch);
+    	for (Enemy e : enimies) e.draw(game.batch);
     	game.batch.end();
     	debug.render(world, camera.combined);    	
     }

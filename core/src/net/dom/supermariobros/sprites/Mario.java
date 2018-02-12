@@ -64,6 +64,7 @@ public class Mario extends Sprite {
 		fixDef.shape = shape;
 		body.createFixture(fixDef);
 		makeHead(fixDef);
+		makeFeet(fixDef);
 	}
 	
 	private void makeHead(FixtureDef fixDef) {
@@ -72,6 +73,14 @@ public class Mario extends Sprite {
 		fixDef.shape = head;
 		fixDef.isSensor = true;
 		body.createFixture(fixDef).setUserData("head");
+	}
+	
+	private void makeFeet(FixtureDef fixDef) {
+		EdgeShape feet = new EdgeShape();
+		feet.set(new Vector2(-4 / GameMain.scale, 0), new Vector2(4 / GameMain.scale, 0));
+		fixDef.shape = feet;
+		fixDef.isSensor = true;
+		body.createFixture(fixDef).setUserData("feet");
 	}
 	
 	private void blinkAnimation() {

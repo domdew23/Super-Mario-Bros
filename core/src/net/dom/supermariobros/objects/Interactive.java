@@ -20,14 +20,13 @@ public abstract class Interactive {
 	protected Rectangle rect;
 	public Body body;
 	protected Fixture fixture;
-	public boolean destroy, jump;
+	public boolean destroy;
 	
 	public Interactive(World world, TiledMap map, Rectangle rect) {
 		this.world = world;
 		this.map = map;
 		this.rect = rect;
 		this.destroy = false;
-		this.jump = false;
 		
 		BodyDef bodyDef = new BodyDef();
 		FixtureDef fixDef = new FixtureDef();
@@ -39,7 +38,7 @@ public abstract class Interactive {
 		body = world.createBody(bodyDef);
 		shape.setAsBox(rect.getWidth() / 2 /GameMain.scale, rect.getHeight() / 2 /GameMain.scale);
 		fixDef.shape = shape;
-		this.fixture = body.createFixture(fixDef);
+		fixture = body.createFixture(fixDef);
 	}
 	
 	public abstract void collision();

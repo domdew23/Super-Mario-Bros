@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 
 import net.dom.supermariobros.objects.Interactive;
+import net.dom.supermariobros.sprites.Enemy;
 
 public class CollisionListener implements ContactListener {
 
@@ -14,7 +15,11 @@ public class CollisionListener implements ContactListener {
 		Fixture a = contact.getFixtureA();
 		Fixture b = contact.getFixtureB();
 		
-		if (!(a.getUserData() instanceof Interactive) && !(b.getUserData() instanceof Interactive)) return;
+		boolean isInteractive=true, isEnemy = true;
+		if (!(a.getUserData() instanceof Interactive) && !(b.getUserData() instanceof Interactive)) isInteractive = false;
+		if (!(a.getUserData() instanceof Enemy) && !(b.getUserData() instanceof Enemy)) isEnemy = false;
+		
+		if (!isInteractive && !isEnemy) return;
 		
 		Fixture mario = null;
 		Fixture object = null;
@@ -23,7 +28,7 @@ public class CollisionListener implements ContactListener {
 			mario = a;
 			object = b;
 		} else if (b.getUserData() == "head") {
-			mario = b;
+			mario = b; 
 			object = a;
 		} else {
 			return;
