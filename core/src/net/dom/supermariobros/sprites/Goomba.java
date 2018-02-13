@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
@@ -15,12 +16,11 @@ import net.dom.supermariobros.screens.GameScreen;
 
 public class Goomba extends Enemy {
 	
-	public Body body;
 	private Animation<TextureRegion> walk;
 	private float stateTimer;
 	private boolean walkingRight;
 	private int count;
-	boolean goingRight;
+	private boolean goingRight;
 
 	public Goomba(World world, GameScreen screen, float x, float y, String sheet) {
 		super(world, screen, x, y, sheet);
@@ -30,7 +30,7 @@ public class Goomba extends Enemy {
 		goingRight = true;
 		count = 0;
 		setBounds(getX(), getY(), 16 / GameMain.scale, 16 / GameMain.scale);
-		fixture.setUserData(this);
+		//fixture.setUserData(this);
 	}
 
 	protected void makeBody() {
@@ -42,8 +42,17 @@ public class Goomba extends Enemy {
 		FixtureDef fixDef = new FixtureDef();
 		CircleShape shape = new CircleShape();
 		shape.setRadius(7 / GameMain.scale);
-		fixDef.shape = shape;
+		fixDef.shape = shape; 
 		fixture = body.createFixture(fixDef);
+		makeHead(fixDef);
+	}
+	
+	protected void makeHead(FixtureDef fixDef) {
+		EdgeShape head = new EdgeShape();
+		head.set(new Vector2(-8 / GameMain.scale, 8 / GameMain.scale), new Vector2(8 / GameMain.scale, 8 / GameMain.scale));
+		fixDef.shape = head;
+		fixDef.restitution = 1;
+		body.createFixture(fixDef).setUserData(this);
 	}
 	
 	private void walkAnimation() {
@@ -89,8 +98,21 @@ public class Goomba extends Enemy {
 	}
 	
 	public void update(float delta) {
-		checkChange();
-		setPosition(body.getPosition().x - getWidth() / 2, body.getPosition().y - getHeight()/2);
-		setRegion(getFrame(delta));
+		if (!destroy) {
+			checkChange();
+			setPosition(body.getPosition().x - getWidth() / 2, body.getPosition().y - getHeight()/2);
+			setRegion(getFrame(delta)); 
+		} else {
+			setRegion(new TextureRegion(getTexture(), 699, 54, 60, 55));
+		}
+	}
+
+	public void collisionHead() {
+		destroy = true;
+		
+	}
+
+	public void collisionBody() {
+		System.out.println("kill mario");
 	}
 }

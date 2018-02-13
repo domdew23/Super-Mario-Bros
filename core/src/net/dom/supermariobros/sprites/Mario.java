@@ -31,6 +31,7 @@ public class Mario extends Sprite {
 	private Animation<TextureRegion> blink;
 	private boolean runningRight;
 	private float stateTimer;
+	private float radius = 14 / GameMain.scale;
 	
 	private TextureRegion standing;
 	
@@ -54,33 +55,24 @@ public class Mario extends Sprite {
 	
 	private void makeBody() {
 		BodyDef bodyDef = new BodyDef();
-		bodyDef.position.set(200 / GameMain.scale, 32 / GameMain.scale);
+		bodyDef.position.set(200 /GameMain.scale, 32 / GameMain.scale);
 		bodyDef.type = BodyDef.BodyType.DynamicBody;
 		body = world.createBody(bodyDef);
 
 		FixtureDef fixDef = new FixtureDef();
 		CircleShape shape = new CircleShape();
-		shape.setRadius(14 / GameMain.scale);
+		shape.setRadius(radius);
 		fixDef.shape = shape;
-		body.createFixture(fixDef);
+		body.createFixture(fixDef).setUserData(this);
 		makeHead(fixDef);
-		makeFeet(fixDef);
 	}
 	
 	private void makeHead(FixtureDef fixDef) {
 		EdgeShape head = new EdgeShape();
-		head.set(new Vector2(-4 / GameMain.scale, 14 / GameMain.scale), new Vector2(4 / GameMain.scale, 14 / GameMain.scale));
+		head.set(new Vector2(-4 / GameMain.scale, radius), new Vector2(4 / GameMain.scale, radius));
 		fixDef.shape = head;
 		fixDef.isSensor = true;
 		body.createFixture(fixDef).setUserData("head");
-	}
-	
-	private void makeFeet(FixtureDef fixDef) {
-		EdgeShape feet = new EdgeShape();
-		feet.set(new Vector2(-4 / GameMain.scale, 0), new Vector2(4 / GameMain.scale, 0));
-		fixDef.shape = feet;
-		fixDef.isSensor = true;
-		body.createFixture(fixDef).setUserData("feet");
 	}
 	
 	private void blinkAnimation() {

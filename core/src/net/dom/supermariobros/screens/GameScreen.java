@@ -61,6 +61,7 @@ public class GameScreen implements Screen {
     private Array<Interactive> interactiveObjects;
     private Score score;
     private int count = 0;
+    
     /*
      * 0 - Background
      * 1 - Graphics
@@ -73,7 +74,7 @@ public class GameScreen implements Screen {
     public GameScreen(GameMain game) {
     	this.game = game;
     	this.world = new World(new Vector2(0, -9.81f), true);
-    	world.setContactListener(new CollisionListener());
+    	this.world.setContactListener(new CollisionListener());
     	this.debug = new Box2DDebugRenderer();
     	this.atlas = new TextureAtlas("sprites/mario_and_enimies.pack");
     	this.interactiveObjects = new Array<Interactive>();
@@ -81,7 +82,7 @@ public class GameScreen implements Screen {
     	
     	loadMap();
     	loadCamera();
-    	createObjects();
+    	loadObjects();
     }
     
     private void loadCamera() {
@@ -96,7 +97,7 @@ public class GameScreen implements Screen {
     	renderer = new OrthogonalTiledMapRenderer(map, 1/ GameMain.scale);    	
     }
     
-    private void createObjects() {    	
+    private void loadObjects() {    	
     	BodyDef bodyDef = new BodyDef();
     	FixtureDef fixDef = new FixtureDef();
     	PolygonShape shape = new PolygonShape();
@@ -109,13 +110,11 @@ public class GameScreen implements Screen {
 		enimies.add(new Goomba(world, this, 5.75f, .32f, "goomba_sheet"));
 		
 		for (MapObject obj : map.getLayers().get(4).getObjects().getByType(RectangleMapObject.class)) {
-			Rectangle rect = ((RectangleMapObject) obj).getRectangle();
-			interactiveObjects.add(new Coin(world, map, rect));
+			interactiveObjects.add(new Coin(world, map, ((RectangleMapObject) obj).getRectangle()));
 		}
 		
 		for (MapObject obj : map.getLayers().get(5).getObjects().getByType(RectangleMapObject.class)) {
-			Rectangle rect = ((RectangleMapObject) obj).getRectangle();
-			interactiveObjects.add(new Brick(world, map, rect));
+			interactiveObjects.add(new Brick(world, map, ((RectangleMapObject) obj).getRectangle()));
 		}
     }
 
@@ -124,13 +123,13 @@ public class GameScreen implements Screen {
     		mario.body.applyLinearImpulse(new Vector2(0.1f, 0), mario.body.getWorldCenter(), true);
     		return;
     	}
-        if(Gdx.input.isKeyPressed(Keys.RIGHT) && mario.body.getLinearVelocity().x <= 2) {
+        if(Gdx.input.isKeyPressed(Keys.D) && mario.body.getLinearVelocity().x <= 2) {
         	mario.body.applyLinearImpulse(new Vector2(0.1f, 0), mario.body.getWorldCenter(), true);
         }
-        if (Gdx.input.isKeyPressed(Keys.LEFT) && mario.body.getLinearVelocity().x >= -2) {
+        if (Gdx.input.isKeyPressed(Keys.A) && mario.body.getLinearVelocity().x >= -2) {
         	mario.body.applyLinearImpulse(new Vector2(-0.1f, 0), mario.body.getWorldCenter(), true);        	
         }
-        if (Gdx.input.isKeyJustPressed(Keys.UP) && mario.body.getLinearVelocity().y == 0) {
+        if (Gdx.input.isKeyJustPressed(Keys.SPACE) && mario.body.getLinearVelocity().y == 0) {
         	mario.body.applyLinearImpulse(new Vector2(0, 3.8f), mario.body.getWorldCenter(), true);
         }
         if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
@@ -152,28 +151,44 @@ public class GameScreen implements Screen {
     	world.step(1/60f, 6, 2);
     	camera.update();
     	mario.update(delta);
-    	for (Enemy e : enimies) e.update(delta);
+    	updateEnimies(delta);
+    	updateObjects(delta);
     	renderer.setView(camera);
     	game.batch.setProjectionMatrix(camera.combined);
     	
-    	if (mario.body.getPosition().y < -1 || mario.body.getPosition().y > viewPort.getWorldHeight()) {
+    	if (mario.body.getPosition().y < -1 || mario.body.getPosition().y > viewPort.getWorldHeight() + 1) {
     		((Game) Gdx.app.getApplicationListener()).setScreen(new MainMenu(game, "GAME OVER"));
     	}
+    }
+    
+    private void updateEnimies(float delta) {
+    	for (Enemy e : enimies) {
+    		if (e.destroy && !world.isLocked()) {
+    			if (!e.destroyed) {
+    				world.destroyBody(e.body);
+    				e.destroyed = true;
+    			}
+    		}
+    		e.update(delta);
+    	}    	
+    }
+    
+    private void updateObjects(float delta) {
     	for (Interactive obj : interactiveObjects) {
     		if(obj.destroy && !world.isLocked()) {
     			world.destroyBody(obj.body);
     			interactiveObjects.removeValue(obj, true);
     			score.update("x " + Integer.toString(++count));
     		}
-    	}
+    	}    	
     }
     
     private void draw(float delta) {
     	renderer.render();
     	score.draw(delta);
     	game.batch.begin();
-    	mario.draw(game.batch);
     	for (Enemy e : enimies) e.draw(game.batch);
+    	mario.draw(game.batch);
     	game.batch.end();
     	debug.render(world, camera.combined);    	
     }
