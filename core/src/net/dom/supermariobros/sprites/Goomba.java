@@ -34,8 +34,4 @@ public class Goomba extends Enemy {
 			setRegion(new TextureRegion(getTexture(), 699, 54, 60, 55));
 		}
 	}
-
-	public void collisionBody() {
-		System.out.println("kill mario");
-	}
 }

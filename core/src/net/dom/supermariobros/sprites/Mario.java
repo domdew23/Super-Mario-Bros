@@ -34,7 +34,7 @@ public class Mario extends Sprite {
 	
 	private boolean runningRight;
 	private float stateTimer;
-	private float radius = 14 / GameMain.scale;
+	private float radius = 9 / GameMain.scale;
 	
 	private Animation<TextureRegion> run;
 	private Animation<TextureRegion> jump;
@@ -59,7 +59,7 @@ public class Mario extends Sprite {
 		standing = new TextureRegion(getTexture(), 405, 272, 20, 40);
 		death = new TextureRegion(getTexture(), 608, 312, 20, 40);
 		
-		setBounds(0, 0, 20 / GameMain.scale, 40 / GameMain.scale);
+		setBounds(0, 0, 16 / GameMain.scale, 32 / GameMain.scale);
 		setRegion(standing);
 	}
 	
@@ -88,7 +88,7 @@ public class Mario extends Sprite {
 	private void blinkAnimation() {
 		Array<TextureRegion> frames = new Array<TextureRegion>();
 		for (int i = 405; i < 405 + (23*2); i+=23) {
-			frames.add(new TextureRegion(getTexture(), i, 272, 23, 40));
+			frames.add(new TextureRegion(getTexture(), i, 272, 23, 43));
 		}
 		blink = new Animation<TextureRegion>(0.5f, frames);
 		frames.clear();
@@ -97,7 +97,7 @@ public class Mario extends Sprite {
 	private void runAnimation() {
 		Array<TextureRegion> frames = new Array<TextureRegion>();
 		for (int i = 476; i < 476 + (20*3); i+=20) {
-			frames.add(new TextureRegion(getTexture(), i, 272, 20, 40));
+			frames.add(new TextureRegion(getTexture(), i, 272, 20, 43));
 		}
 		
 		run = new Animation<TextureRegion>(0.1f, frames);
@@ -107,7 +107,7 @@ public class Mario extends Sprite {
 	private void jumpAnimation() {
 		Array<TextureRegion> frames = new Array<TextureRegion>();
 		for (int i = 536; i < 536 + (23*1); i+=23) {
-			frames.add(new TextureRegion(getTexture(), i, 272, 23, 40));
+			frames.add(new TextureRegion(getTexture(), i, 272, 23, 41));
 		}
 		
 		jump = new Animation<TextureRegion>(0.1f, frames);

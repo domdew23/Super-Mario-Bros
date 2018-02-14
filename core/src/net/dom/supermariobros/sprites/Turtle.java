@@ -36,9 +36,4 @@ public class Turtle extends Enemy {
 		}
 	}
 
-
-	public void collisionBody() {
-		
-	}
-
 }

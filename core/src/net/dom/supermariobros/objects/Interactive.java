@@ -43,10 +43,10 @@ public abstract class Interactive {
 		fixture = body.createFixture(fixDef);
 	}
 	
-	public abstract void collision();
-	
 	public Cell getCell() {
 		TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(1);
 		return layer.getCell((int) (body.getPosition().x * GameMain.scale / 16), (int) (body.getPosition().y * GameMain.scale / 16));
 	}
+	
+	public abstract void collision();
 }

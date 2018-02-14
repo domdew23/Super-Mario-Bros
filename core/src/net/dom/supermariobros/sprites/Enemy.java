@@ -17,18 +17,20 @@ import com.dom.supermariobros.GameMain;
 import net.dom.supermariobros.screens.GameScreen;
 
 public abstract class Enemy extends Sprite {
-	protected World world;
-	protected GameScreen screen;
-	protected Fixture fixture;
+	
 	public Body body;
 	public boolean destroy;
 	public boolean destroyed;
+	
 	protected float stateTimer;
 	protected boolean walkingRight;
 	protected int count;
 	protected boolean goingRight;
 	protected Animation<TextureRegion> walk;
-
+	protected World world;
+	protected GameScreen screen;
+	protected Fixture fixture;
+	
 	public Enemy(World world, GameScreen screen, float x, float y, String sheet) {
 		super(screen.getAtlas().findRegion(sheet));
 		this.world = world;
@@ -108,5 +110,4 @@ public abstract class Enemy extends Sprite {
 	
 	public abstract void update(float delta);
 	protected abstract void walkAnimation();
-	public abstract void collisionBody();
 }
