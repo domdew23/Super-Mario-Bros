@@ -12,6 +12,7 @@ public class Coin extends Interactive {
 	}
 
 	public void collision() {
+		destroy = true;
 		getCell().setTile(map.getTileSets().getTile(28));
 	}
 }

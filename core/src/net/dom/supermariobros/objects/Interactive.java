@@ -18,15 +18,17 @@ public abstract class Interactive {
 	protected TiledMap map;
 	protected TiledMapTile tile;
 	protected Rectangle rect;
-	public Body body;
 	protected Fixture fixture;
-	public boolean destroy;
+	
+	public boolean destroy, collected;
+	public Body body;
 	
 	public Interactive(World world, TiledMap map, Rectangle rect) {
 		this.world = world;
 		this.map = map;
 		this.rect = rect;
 		this.destroy = false;
+		this.collected = false;
 		
 		BodyDef bodyDef = new BodyDef();
 		FixtureDef fixDef = new FixtureDef();

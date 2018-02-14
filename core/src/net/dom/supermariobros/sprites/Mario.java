@@ -8,6 +8,8 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.EdgeShape;
+import com.badlogic.gdx.physics.box2d.Filter;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
@@ -22,13 +24,16 @@ public class Mario extends Sprite {
 		FALLING,
 		JUMPING,
 		STANDING,
-		RUNNING
+		RUNNING,
+		DEAD
 	};
 	public State currentState;
 	public State prevState;
+	public boolean isDead;
 	private Animation<TextureRegion> run;
 	private Animation<TextureRegion> jump;
 	private Animation<TextureRegion> blink;
+	private TextureRegion death;
 	private boolean runningRight;
 	private float stateTimer;
 	private float radius = 14 / GameMain.scale;
@@ -38,6 +43,7 @@ public class Mario extends Sprite {
 	public Mario(World world, GameScreen screen) {
 		super(screen.getAtlas().findRegion("mario_sheet"));
 		this.world = world;
+		this.isDead = false;
 		currentState = State.STANDING;
 		prevState = State.STANDING;
 		stateTimer = 0;
@@ -49,6 +55,8 @@ public class Mario extends Sprite {
 		blinkAnimation();
 		
 		standing = new TextureRegion(getTexture(), 405, 272, 20, 40);
+		death = new TextureRegion(getTexture(), 608, 312, 20, 40);
+		
 		setBounds(0, 0, 20 / GameMain.scale, 40 / GameMain.scale);
 		setRegion(standing);
 	}
@@ -111,6 +119,7 @@ public class Mario extends Sprite {
 			case JUMPING: region = jump.getKeyFrame(stateTimer); break;
 			case RUNNING: region = run.getKeyFrame(stateTimer, true); break;
 			case STANDING: region = blink.getKeyFrame(stateTimer, true); break;
+			case DEAD: region = death; break;
 			default: region = standing; break;
 		}
 		
@@ -127,8 +136,16 @@ public class Mario extends Sprite {
 		return region;
 	}
 	
+	public void enemyCollision() {
+		Filter filter = new Filter();
+		filter.maskBits = 0;
+		for (Fixture f : body.getFixtureList()) f.setFilterData(filter);
+		body.applyLinearImpulse(new Vector2(0, 3.4f), body.getWorldCenter(), true);
+	}
+	
 	public State getState() {
-		if (body.getLinearVelocity().y > 0 || (body.getLinearVelocity().y < 0 && prevState == State.JUMPING)) return State.JUMPING;
+		if (isDead) return State.DEAD;
+		else if (body.getLinearVelocity().y > 0 || (body.getLinearVelocity().y < 0 && prevState == State.JUMPING)) return State.JUMPING;
 		else if (body.getLinearVelocity().y < 0) return State.FALLING;
 		else if (body.getLinearVelocity().x != 0) return State.RUNNING;
 		else return State.STANDING;

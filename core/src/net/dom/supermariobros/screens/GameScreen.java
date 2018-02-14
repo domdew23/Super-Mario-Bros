@@ -176,9 +176,15 @@ public class GameScreen implements Screen {
     private void updateObjects(float delta) {
     	for (Interactive obj : interactiveObjects) {
     		if(obj.destroy && !world.isLocked()) {
-    			world.destroyBody(obj.body);
-    			interactiveObjects.removeValue(obj, true);
-    			score.update("x " + Integer.toString(++count));
+    			if (obj instanceof Coin) {
+    				if (!obj.collected) {
+    				obj.collected = true;
+    				score.update("x " + Integer.toString(++count));
+    				}
+    			} else {
+    				world.destroyBody(obj.body);    			
+    				interactiveObjects.removeValue(obj, true);
+    			}
     		}
     	}    	
     }
@@ -187,10 +193,14 @@ public class GameScreen implements Screen {
     	renderer.render();
     	score.draw(delta);
     	game.batch.begin();
-    	for (Enemy e : enimies) e.draw(game.batch);
-    	mario.draw(game.batch);
+    	drawSprites();
     	game.batch.end();
     	debug.render(world, camera.combined);    	
+    }
+    
+    private void drawSprites() {
+    	for (Enemy e : enimies) e.draw(game.batch);
+    	mario.draw(game.batch);    	
     }
 
     public void resize(int width, int height) {

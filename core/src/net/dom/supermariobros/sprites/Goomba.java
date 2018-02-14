@@ -1,6 +1,7 @@
 package net.dom.supermariobros.sprites;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -76,7 +77,6 @@ public class Goomba extends Enemy {
 			walkingRight = true;
 		}
 		
-		stateTimer += delta;
 		return region;
 	}
 
@@ -98,6 +98,7 @@ public class Goomba extends Enemy {
 	}
 	
 	public void update(float delta) {
+		stateTimer += delta;
 		if (!destroy) {
 			checkChange();
 			setPosition(body.getPosition().x - getWidth() / 2, body.getPosition().y - getHeight()/2);
@@ -106,10 +107,14 @@ public class Goomba extends Enemy {
 			setRegion(new TextureRegion(getTexture(), 699, 54, 60, 55));
 		}
 	}
+	
+	public void draw(Batch batch) {
+		if (!destroyed || stateTimer < 1) super.draw(batch);
+	}
 
 	public void collisionHead() {
 		destroy = true;
-		
+		stateTimer = 0;
 	}
 
 	public void collisionBody() {

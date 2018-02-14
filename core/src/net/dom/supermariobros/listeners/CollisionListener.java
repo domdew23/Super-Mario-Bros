@@ -43,7 +43,8 @@ public class CollisionListener implements ContactListener {
 		if (mario.body.getPosition().y - (14 / GameMain.scale) > enemy.body.getPosition().y) {
 			enemy.collisionHead();
 		} else {
-			enemy.collisionBody();
+			mario.isDead = true;
+			mario.enemyCollision();
 		}
 	}
 	
