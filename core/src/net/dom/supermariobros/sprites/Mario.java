@@ -27,17 +27,19 @@ public class Mario extends Sprite {
 		RUNNING,
 		DEAD
 	};
+	
 	public State currentState;
 	public State prevState;
 	public boolean isDead;
-	private Animation<TextureRegion> run;
-	private Animation<TextureRegion> jump;
-	private Animation<TextureRegion> blink;
-	private TextureRegion death;
+	
 	private boolean runningRight;
 	private float stateTimer;
 	private float radius = 14 / GameMain.scale;
 	
+	private Animation<TextureRegion> run;
+	private Animation<TextureRegion> jump;
+	private Animation<TextureRegion> blink;
+	private TextureRegion death;
 	private TextureRegion standing;
 	
 	public Mario(World world, GameScreen screen) {

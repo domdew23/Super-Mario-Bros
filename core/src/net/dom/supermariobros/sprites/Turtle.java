@@ -7,18 +7,19 @@ import com.badlogic.gdx.utils.Array;
 
 import net.dom.supermariobros.screens.GameScreen;
 
-public class Goomba extends Enemy {
-	
-	public Goomba(World world, GameScreen screen, float x, float y, String sheet) {
+public class Turtle extends Enemy {
+
+	public Turtle(World world, GameScreen screen, float x, float y, String sheet) {
 		super(world, screen, x, y, sheet);
 		walkAnimation();
 	}
-	
+
 	protected void walkAnimation() {
 		Array<TextureRegion> frames = new Array<TextureRegion>();
-		int size = 60;
-		for (int i = 399; i < 399 + (size*5); i+=size) {
-			frames.add(new TextureRegion(getTexture(), i, 195, size, 55));
+		int size = 40;
+		int start = 190;
+		for (int i = start; i < start + (size*4); i+=size) {
+			frames.add(new TextureRegion(getTexture(), i, 41, size, 29));
 		}
 		walk = new Animation<TextureRegion>(0.1f, frames);
 		frames.clear();
@@ -31,11 +32,13 @@ public class Goomba extends Enemy {
 			setPosition(body.getPosition().x - getWidth() / 2, body.getPosition().y - getHeight()/2);
 			setRegion(getFrame(delta)); 
 		} else {
-			setRegion(new TextureRegion(getTexture(), 699, 54, 60, 55));
+			setRegion(new TextureRegion(getTexture(), 1, 1, 35, 23));
 		}
 	}
 
+
 	public void collisionBody() {
-		System.out.println("kill mario");
+		
 	}
+
 }

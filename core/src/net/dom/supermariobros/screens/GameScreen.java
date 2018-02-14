@@ -35,6 +35,7 @@ import net.dom.supermariobros.objects.Pipes;
 import net.dom.supermariobros.sprites.Enemy;
 import net.dom.supermariobros.sprites.Goomba;
 import net.dom.supermariobros.sprites.Mario;
+import net.dom.supermariobros.sprites.Turtle;
 
 
 public class GameScreen implements Screen {
@@ -98,16 +99,24 @@ public class GameScreen implements Screen {
     }
     
     private void loadObjects() {    	
-    	BodyDef bodyDef = new BodyDef();
-    	FixtureDef fixDef = new FixtureDef();
-    	PolygonShape shape = new PolygonShape();
-    	
+
     	score = new Score("x 0", Gdx.graphics.getWidth()/2, 550f);
-    	ground = new Ground(map, world, bodyDef, body, shape, fixDef);
-		pipes = new Pipes(map, world, bodyDef, body, shape, fixDef);
+    	ground = new Ground(map, world);
+		pipes = new Pipes(map, world);
 		mario = new Mario(world, this);
 		enimies.add(new Goomba(world, this, 5.15f, .32f, "goomba_sheet"));
 		enimies.add(new Goomba(world, this, 5.75f, .32f, "goomba_sheet"));
+		enimies.add(new Goomba(world, this, 8.5f, .32f, "goomba_sheet"));
+		enimies.add(new Goomba(world, this, 9.1f, .32f, "goomba_sheet"));
+		enimies.add(new Goomba(world, this, 16.5f, .32f, "goomba_sheet"));
+		enimies.add(new Goomba(world, this, 17.1f, .32f, "goomba_sheet"));
+		
+		enimies.add(new Turtle(world, this, 13f, .32f, "turtle_sheet"));
+		enimies.add(new Turtle(world, this, 13.6f, .32f, "turtle_sheet"));
+		enimies.add(new Turtle(world, this, 19.5f, .32f, "turtle_sheet"));
+		enimies.add(new Turtle(world, this, 20.5f, .32f, "turtle_sheet"));
+		enimies.add(new Turtle(world, this, 28f, .32f, "turtle_sheet"));
+		enimies.add(new Turtle(world, this, 29f, .32f, "turtle_sheet"));
 		
 		for (MapObject obj : map.getLayers().get(4).getObjects().getByType(RectangleMapObject.class)) {
 			interactiveObjects.add(new Coin(world, map, ((RectangleMapObject) obj).getRectangle()));
