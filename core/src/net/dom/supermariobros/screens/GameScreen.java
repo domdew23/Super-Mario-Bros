@@ -200,7 +200,7 @@ public class GameScreen implements Screen {
     	game.batch.begin();
     	drawSprites();
     	game.batch.end();
-    	//debug.render(world, camera.combined);    	
+    	debug.render(world, camera.combined);    	
     }
     
     private void drawSprites() {

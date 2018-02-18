@@ -62,7 +62,7 @@ public abstract class Enemy extends Sprite {
 	
 	protected void makeHead(FixtureDef fixDef) {
 		EdgeShape head = new EdgeShape();
-		head.set(new Vector2(-8 / GameMain.scale, 8 / GameMain.scale), new Vector2(8 / GameMain.scale, 8 / GameMain.scale));
+		head.set(new Vector2(-8 / GameMain.scale, 7 / GameMain.scale), new Vector2(7 / GameMain.scale, 8 / GameMain.scale));
 		fixDef.shape = head;
 		fixDef.restitution = 1;
 		body.createFixture(fixDef).setUserData(this);
